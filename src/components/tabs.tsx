@@ -24,7 +24,7 @@ export interface TabContentProps {
 const TabContent: React.FC<TabContentProps> = ({ tab, onJsonChange, onConfigChange }) => {
   const [jsonError, setJsonError] = useState<string>('');
   const [parsedJson, setParsedJson] = useState<Record<string, any>[]>([]); // Array of objects, values can be anything
-  const [mode, setMode] = useState<string>('Interfacing')
+  const [mode, setMode] = useState<string>('')
 
   // Effect to validate JSON when tab.jsonInput changes
   useEffect(() => {
@@ -75,20 +75,29 @@ const TabContent: React.FC<TabContentProps> = ({ tab, onJsonChange, onConfigChan
       {/* Kolom Input JSON */}
       <div className="flex-1 min-w-[300px]">
         <h3 className="text-xl font-semibold mb-3 text-gray-800">Input JSON</h3>
-        <div className="relative mb-4">
-
-          <CodeEditor
-            language='json'
-            className="w-full border p-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono resize-y"
-            value={tab.jsonInput}
-            height={500}
-            onChange={(value) => handleJsonInputChange(value || '')}
-          />
-          {jsonError && (
-            <div className="absolute bottom-0 left-0 w-full bg-red-100 text-red-700 text-xs p-2 rounded-b-md">
-              {jsonError}
-            </div>
-          )}
+        <div className="relative mb-4 flex flex-row">
+          <div className={mode === 'Comparator'? 'w-1/2': 'w-full'}>
+            <CodeEditor
+              language='json'
+              className="w-full border p-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono resize-y"
+              value={tab.jsonInput}
+              height={500}
+              onChange={(value) => handleJsonInputChange(value || '')}
+            />
+            {jsonError && (
+              <div className="absolute bottom-0 left-0 w-full bg-red-100 text-red-700 text-xs p-2 rounded-b-md">
+                {jsonError}
+              </div>
+            )}
+          </div>
+          {mode === 'Comparator' && <div className='w-1/2'>
+            <CodeEditor
+              language='json'
+              className="w-full border p-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 font-mono resize-y"
+              value={''}
+              height={500}
+            />
+          </div>}
         </div>
       </div>
 
@@ -96,10 +105,12 @@ const TabContent: React.FC<TabContentProps> = ({ tab, onJsonChange, onConfigChan
         setMode(e.target.value);
         tab.mode = e.target.value;
       }} value={mode} className='p-3 border border-gray-300 rounded-md shadow-sm w-[300px]'>
+        <option value="">Select Mode</option>
         <option value="Interfacing">Interfacing</option>
         {/* <option value="BarChart">Bar Chart</option> */}
         <option value="Calculation">Calculation</option>
         {/* <option value="Collection">Collection</option> */}
+        <option value="Comparator">Comparator</option>
       </select>
       
       {
